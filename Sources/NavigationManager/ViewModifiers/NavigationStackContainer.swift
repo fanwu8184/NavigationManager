@@ -4,9 +4,11 @@ import SwiftUI
 struct NavigationStackContainer: ViewModifier {
     @Environment(NavigationManager.self) private var manager
     private let root: any NavigableScreen
+    private let tint: Color?
 
-    init(root: any NavigableScreen) {
+    init(root: any NavigableScreen, tint: Color? = nil) {
         self.root = root
+        self.tint = tint
     }
 
     func body(content: Content) -> some View {
@@ -19,5 +21,6 @@ struct NavigationStackContainer: ViewModifier {
             content
                 .modifier(NavigationPresentationModifier(manager: manager, root: root))
         }
+        .tint(tint)
     }
 }

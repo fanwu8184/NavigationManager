@@ -14,7 +14,7 @@ extension AppScreen: NavigableScreen {
         case .root: HomeView()
         case .a: AView()
         case .b: BView()
-        case .c: Text("C View")
+        case .c: CView()
         case .d: DView()
         case .e: EView()
         case .f: FView()
@@ -60,13 +60,13 @@ struct AView: View {
                 manager.push(from: AppScreen.a, to: AppScreen.e)
             }
         }
-        .withNavigationStack(root: AppScreen.a)
+        .managedNavigationStack(root: AppScreen.a)
     }
 }
 
 struct BView: View {
     @Environment(NavigationManager.self) private var manager
-    
+
     var body: some View {
         VStack {
             Text("B View")
@@ -74,13 +74,30 @@ struct BView: View {
                 manager.push(from: AppScreen.b, to: AppScreen.ba)
             }
         }
-        .withNavigationStack(root: AppScreen.b)
+        .managedNavigationStack(root: AppScreen.b)
+    }
+}
+
+struct CView: View {
+    @Environment(NavigationManager.self) private var manager
+
+    var body: some View {
+        VStack {
+            Text("C View")
+            Button("Go to D") {
+                manager.presentSheet(from: AppScreen.c, to: AppScreen.d)
+            }
+            Button("Go to E") {
+                manager.push(from: AppScreen.c, to: AppScreen.e)
+            }
+        }
+        .managedNavigationStack(root: AppScreen.c)
     }
 }
 
 struct DView: View {
     @Environment(NavigationManager.self) private var manager
-    
+
     var body: some View {
         VStack {
             Text("D View")
@@ -93,12 +110,15 @@ struct DView: View {
 
 struct EView: View {
     @Environment(NavigationManager.self) private var manager
-    
+
     var body: some View {
         VStack {
             Text("E View")
             Button("Go to F") {
                 manager.push(from: AppScreen.a, to: AppScreen.f)
+            }
+            Button("Go to C") {
+                manager.presentSheet(from: AppScreen.a, to: AppScreen.c)
             }
         }
     }
@@ -106,7 +126,7 @@ struct EView: View {
 
 struct FView: View {
     @Environment(NavigationManager.self) private var manager
-    
+
     var body: some View {
         VStack {
             Text("F View")
@@ -123,16 +143,14 @@ struct FView: View {
 struct BAView: View {
     @Environment(NavigationManager.self) private var manager
     let tabs: [AppScreen] = [.bb, .bc]
-    
+
     var body: some View {
         VStack {
             HStack(spacing: 10) {
                 ForEach(tabs) { tab in
-                    Button(
-                        action: {
-                            manager.selectTab(from: AppScreen.ba, to: tab)
-                        }
-                    ) {
+                    Button {
+                        manager.selectTab(from: AppScreen.ba, to: tab)
+                    } label: {
                         Text(tab.id)
                             .frame(maxWidth: .infinity)
                     }
@@ -184,7 +202,7 @@ struct HomeView: View {
                 tab.contentView()
                     .tabItem { tab.tabItem() }
             }
-            .withTabNavigation(root: AppScreen.root, tabs: tabs)
+            .managedTabNavigation(root: AppScreen.root, tabs: tabs)
         }
         .environment(manager)
     }
@@ -193,3 +211,4 @@ struct HomeView: View {
 #Preview {
     HomeView()
 }
+
