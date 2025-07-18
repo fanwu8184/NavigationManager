@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Protocol for screens that can be navigated to within the navigation system.
-public protocol NavigableScreen: Identifiable, Hashable where ID == String {
+public protocol NavigableScreen: Sendable, Identifiable, Hashable where ID == String {
     /// The content view to be displayed for this screen.
     associatedtype Content: View
     /*

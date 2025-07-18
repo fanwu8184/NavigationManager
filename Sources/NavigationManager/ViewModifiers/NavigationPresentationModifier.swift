@@ -4,12 +4,12 @@ import SwiftUI
 struct NavigationPresentationModifier: ViewModifier {
     private var manager: NavigationManager
     private let root: any NavigableScreen
-    
+
     init(manager: NavigationManager, root: any NavigableScreen) {
         self.manager = manager
         self.root = root
     }
-    
+
     /// Binding for sheet presentations.
     private var presentedBinding: Binding<NavigationItem<AnyView>?> {
         Binding(
@@ -17,7 +17,7 @@ struct NavigationPresentationModifier: ViewModifier {
             set: { manager.presentedItems[root.id] = $0 }
         )
     }
-    
+
     /// Binding for full-screen cover presentations.
     private var fullScreenBinding: Binding<NavigationItem<AnyView>?> {
         Binding(
@@ -25,7 +25,7 @@ struct NavigationPresentationModifier: ViewModifier {
             set: { manager.presentedItems[root.id] = $0 }
         )
     }
-    
+
     func body(content: Content) -> some View {
         content
             .sheet(item: presentedBinding) { item in

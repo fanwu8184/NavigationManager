@@ -3,35 +3,47 @@ import SwiftUI
 /// Manages navigation state and transitions between screens.
 @MainActor
 @Observable
-public class NavigationManager {
+public class NavigationManager: NavigationManagerProtocol {
     /// Tracks the selected tab for each root screen.
     var selectedTab: [String: String] = [:]
     /// Tracks the navigation stack paths for each root screen.
     var stackPaths: [String: [NavigationItem<AnyView>]] = [:]
     /// Tracks presented items (sheets or full-screen covers) for each root screen.
     var presentedItems: [String: NavigationItem<AnyView>] = [:]
-    
-    public init() {}
+    public static var shared = NavigationManager()
+
+    init() {}
 
     /// Pushes a child screen onto the navigation stack from a root screen.
     public func push<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child) {
-        let item = NavigationItem(view: AnyView(child.contentView()), mode: .stack)
+        let item = NavigationItem(id: child.id, view: AnyView(child.contentView()), mode: .stack)
         stackPaths[root.id, default: []].append(item)
     }
-    
+
+    /// Pushes a sequence of screens onto the navigation stack, using the first screen as the root.
+    public func push(screens: [any NavigableScreen]) {
+        guard screens.count > 1 else { return }
+        let root = screens[0]
+        resetStacks(in: root)
+        for screen in screens.dropFirst() {
+            let item = NavigationItem(id: screen.id, view: AnyView(screen.contentView()), mode: .stack)
+            stackPaths[root.id, default: []].append(item)
+        }
+    }
+
     /// Presents a child screen as a sheet from a root screen.
     public func presentSheet<Root: NavigableScreen, Child: NavigableScreen>(
         from root: Root,
         to child: Child,
         detents: Set<PresentationDetent> = [.large]
     ) {
-        let item = NavigationItem(view: AnyView(child.contentView()), mode: .sheet(detents: detents))
+        let item = NavigationItem(id: child.id, view: AnyView(child.contentView()), mode: .sheet(detents: detents))
         presentedItems[root.id] = item
     }
-    
+
     /// Presents a child screen as a full-screen cover from a root screen.
     public func presentFullScreen<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child) {
-        let item = NavigationItem(view: AnyView(child.contentView()), mode: .fullScreen)
+        let item = NavigationItem(id: child.id, view: AnyView(child.contentView()), mode: .fullScreen)
         presentedItems[root.id] = item
     }
 
@@ -49,21 +61,25 @@ public class NavigationManager {
     public func popToRoot<Root: NavigableScreen>(from root: Root) {
         stackPaths[root.id]?.removeAll()
     }
-    
+
     /// Selects a child screen as a tab from a root screen.
     public func selectTab<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child) {
         selectedTab[root.id] = child.id
     }
-    
+
     /// Returns the ID of the currently selected tab for the given root screen, if any.
-    public func selectedTabID<Root: NavigableScreen>(for root: Root) -> String? {
+    public func getSelectedTabID<Root: NavigableScreen>(for root: Root) -> String? {
         selectedTab[root.id]
     }
-    
+
     /// Resets all navigation state, clearing selected tabs, navigation stacks, and presented screens.
     public func reset() {
         selectedTab.removeAll()
         stackPaths.removeAll()
         presentedItems.removeAll()
+    }
+
+    public func resetStacks<Root: NavigableScreen>(in root: Root) {
+        stackPaths[root.id] = []
     }
 }

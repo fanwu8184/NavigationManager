@@ -35,10 +35,6 @@ extension AppScreen: NavigableScreen {
             EmptyView()
         }
     }
-
-    static func from(_ rawValue: String) -> AppScreen? {
-        allCases.first { $0.rawValue.lowercased() == rawValue.lowercased() }
-    }
 }
 
 struct AView: View {
@@ -46,20 +42,20 @@ struct AView: View {
 
     var body: some View {
         VStack {
-            Text("A View")
-            Button("Go to B") {
+            Button("Go to Tab B from Root") {
                 manager.selectTab(from: AppScreen.root, to: AppScreen.b)
             }
-            Button("Go to C") {
+            Button("Present Nested Stack C With Sheet in A") {
                 manager.presentSheet(from: AppScreen.a, to: AppScreen.c)
             }
-            Button("Go to D") {
+            Button("Present D with Full Screen in A") {
                 manager.presentFullScreen(from: AppScreen.a, to: AppScreen.d)
             }
-            Button("Go to E") {
+            Button("Push E in A") {
                 manager.push(from: AppScreen.a, to: AppScreen.e)
             }
         }
+        .navigationTitle("Tab A")
         .managedNavigationStack(root: AppScreen.a)
     }
 }
@@ -69,11 +65,11 @@ struct BView: View {
 
     var body: some View {
         VStack {
-            Text("B View")
-            Button("Go to BA") {
+            Button("Push a customized Tab BA in B") {
                 manager.push(from: AppScreen.b, to: AppScreen.ba)
             }
         }
+        .navigationTitle("Tab B")
         .managedNavigationStack(root: AppScreen.b)
     }
 }
@@ -83,14 +79,14 @@ struct CView: View {
 
     var body: some View {
         VStack {
-            Text("C View")
-            Button("Go to D") {
+            Button("Present D with Sheet in c") {
                 manager.presentSheet(from: AppScreen.c, to: AppScreen.d)
             }
-            Button("Go to E") {
+            Button("Push E to in C") {
                 manager.push(from: AppScreen.c, to: AppScreen.e)
             }
         }
+        .navigationTitle("Nested Stack C")
         .managedNavigationStack(root: AppScreen.c)
     }
 }
@@ -101,7 +97,7 @@ struct DView: View {
     var body: some View {
         VStack {
             Text("D View")
-            Button("Dismiss") {
+            Button("Dismiss from A") {
                 manager.dismiss(from: AppScreen.a)
             }
         }
@@ -113,14 +109,14 @@ struct EView: View {
 
     var body: some View {
         VStack {
-            Text("E View")
-            Button("Go to F") {
+            Button("Push F in A") {
                 manager.push(from: AppScreen.a, to: AppScreen.f)
             }
-            Button("Go to C") {
+            Button("Present C with Sheet in A") {
                 manager.presentSheet(from: AppScreen.a, to: AppScreen.c)
             }
         }
+        .navigationTitle("E View")
     }
 }
 
@@ -129,14 +125,14 @@ struct FView: View {
 
     var body: some View {
         VStack {
-            Text("F View")
-            Button("pop") {
+            Button("pop from A") {
                 manager.pop(from: AppScreen.a)
             }
-            Button("go to root") {
+            Button("Pop all in Root") {
                 manager.popToRoot(from: AppScreen.a)
             }
         }
+        .navigationTitle("F View")
     }
 }
 
@@ -155,18 +151,18 @@ struct BAView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .padding(8)
-                    .background(manager.selectedTabID(for: AppScreen.ba) == tab.id ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                    .background(manager.getSelectedTabID(for: AppScreen.ba) == tab.id ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
                     .cornerRadius(5)
                 }
             }
             .padding()
 
-            if let id = manager.selectedTabID(for: AppScreen.ba) {
-                AppScreen.from(id)?.contentView()
+            if let id = manager.getSelectedTabID(for: AppScreen.ba) {
+                AppScreen(rawValue: id.lowercased())?.contentView()
             }
         }
         .task {
-            if manager.selectedTabID(for: AppScreen.ba) == nil {
+            if manager.getSelectedTabID(for: AppScreen.ba) == nil {
                 manager.selectTab(from: AppScreen.ba, to: AppScreen.bb)
             }
         }
@@ -177,8 +173,8 @@ struct BBView: View {
     var body: some View {
         ZStack {
             Color.red
-            Text("BB View")
         }
+        .navigationTitle("Tab BB")
     }
 }
 
@@ -186,13 +182,13 @@ struct BCView: View {
     var body: some View {
         ZStack {
             Color.blue
-            Text("BC View")
         }
+        .navigationTitle("Tab BC")
     }
 }
 
 struct HomeView: View {
-    private var manager = NavigationManager()
+    private var manager = NavigationManager.shared
     let tabs: [AppScreen] = [.a, .b]
 
     var body: some View {
@@ -211,4 +207,3 @@ struct HomeView: View {
 #Preview {
     HomeView()
 }
-
