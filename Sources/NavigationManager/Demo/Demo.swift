@@ -188,7 +188,7 @@ struct BCView: View {
 }
 
 struct HomeView: View {
-    private var manager = NavigationManager.shared
+    private var manager = NavigationManager()
     let tabs: [AppScreen] = [.a, .b]
 
     var body: some View {
