@@ -10,9 +10,8 @@ public class NavigationManager: NavigationManagerProtocol {
     var stackPaths: [String: [NavigationItem<AnyView>]] = [:]
     /// Tracks presented items (sheets or full-screen covers) for each root screen.
     var presentedItems: [String: NavigationItem<AnyView>] = [:]
-    public static var shared = NavigationManager()
 
-    init() {}
+    public init() {}
 
     /// Pushes a child screen onto the navigation stack from a root screen.
     public func push<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child) {
