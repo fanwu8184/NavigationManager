@@ -12,6 +12,12 @@ struct NavigationCapableContainer: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .modifier(NavigationPresentationModifier(manager: manager, root: root))
+            .modifier(
+                NavigationPresentationModifier(
+                    manager: manager,
+                    root: root,
+                    includingNavigationDestination: false
+                )
+            )
     }
 }

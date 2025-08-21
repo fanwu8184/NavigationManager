@@ -4,10 +4,16 @@ import SwiftUI
 struct NavigationPresentationModifier: ViewModifier {
     private var manager: NavigationManager
     private let root: any NavigableScreen
+    private let includingNavigationDestination: Bool
 
-    init(manager: NavigationManager, root: any NavigableScreen) {
+    init(
+        manager: NavigationManager,
+        root: any NavigableScreen,
+        includingNavigationDestination: Bool = true
+    ) {
         self.manager = manager
         self.root = root
+        self.includingNavigationDestination = includingNavigationDestination
     }
 
     /// Binding for sheet presentations.
@@ -27,7 +33,7 @@ struct NavigationPresentationModifier: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        content
+        let base = content
             .sheet(item: presentedBinding) { item in
                 item.view
                     .presentationDetents(item.mode.detents ?? [.large])
@@ -35,8 +41,13 @@ struct NavigationPresentationModifier: ViewModifier {
             .fullScreenCover(item: fullScreenBinding) { item in
                 item.view
             }
-            .navigationDestination(for: NavigationItem<AnyView>.self) { item in
+
+        if includingNavigationDestination {
+            base.navigationDestination(for: NavigationItem<AnyView>.self) { item in
                 item.view
             }
+        } else {
+            base
+        }
     }
 }
