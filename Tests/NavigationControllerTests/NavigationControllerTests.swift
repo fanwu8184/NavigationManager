@@ -34,6 +34,7 @@ struct NavigationManagerTests {
     #expect(navigationManager.selectedTab.isEmpty == true)
     #expect(navigationManager.stackPaths.isEmpty == true)
     #expect(navigationManager.presentedItems.isEmpty == true)
+    #expect(navigationManager.alertItems.isEmpty == true)
   }
 
   @Test("When push a single screen Then the stackPaths should contain correct path")
@@ -68,10 +69,11 @@ struct NavigationManagerTests {
     let root = MockScreen(id: "root")
     let child = MockScreen(id: "child")
     let detents: Set<PresentationDetent> = [.medium, .large]
-    navigationManager.presentSheet(from: root, to: child, detents: detents)
+    navigationManager.presentSheet(from: root, to: child, detents: detents, isScalable: true)
     #expect(navigationManager.presentedItems[root.id]?.id.contains("child") == true)
     #expect(navigationManager.presentedItems[root.id]?.mode.isSheet == true)
     #expect(navigationManager.presentedItems[root.id]?.mode.detents == detents)
+    #expect(navigationManager.presentedItems[root.id]?.mode.isScalable == true)
   }
 
   @Test("When present a full screen Then the presentedItems should contain the correct item")
@@ -81,6 +83,40 @@ struct NavigationManagerTests {
     navigationManager.presentFullScreen(from: root, to: child)
     #expect(navigationManager.presentedItems[root.id]?.id.contains("child") == true)
     #expect(navigationManager.presentedItems[root.id]?.mode.isFullScreen == true)
+  }
+
+  @Test("When present an alert with message Then the alertItems should contain the correct alert")
+  func testPresentAlert() {
+    let root = MockScreen(id: "root")
+    navigationManager.presentAlert(
+      from: root,
+      title: "Alert Title",
+      actions: { Button("OK") {} },
+      message: { Text("Alert Message") }
+    )
+    #expect(navigationManager.alertItems[root.id] != nil)
+    #expect(navigationManager.alertItems[root.id]?.title == "Alert Title")
+  }
+
+  @Test("When present an alert without message Then the alertItems should contain the correct alert")
+  func testPresentAlertWithoutMessage() {
+    let root = MockScreen(id: "root")
+    navigationManager.presentAlert(
+      from: root,
+      title: "Alert Title No msg",
+      actions: { Button("OK") {} }
+    )
+    #expect(navigationManager.alertItems[root.id] != nil)
+    #expect(navigationManager.alertItems[root.id]?.title == "Alert Title No msg")
+  }
+
+  @Test("When dismiss alert Then the alertItems should be nil")
+  func testDismissAlert() {
+    let root = MockScreen(id: "root")
+    navigationManager.presentAlert(from: root, title: "Alert", actions: { EmptyView() })
+    #expect(navigationManager.alertItems[root.id] != nil)
+    navigationManager.dismissAlert(from: root)
+    #expect(navigationManager.alertItems[root.id] == nil)
   }
 
   @Test("When dismiss presented Item after presenting a sheet or a full screen Then the presentedItems should be nil")
@@ -141,13 +177,16 @@ struct NavigationManagerTests {
     navigationManager.push(from: root, to: child)
     navigationManager.presentSheet(from: root, to: child)
     navigationManager.selectTab(from: root, to: child)
+    navigationManager.presentAlert(from: root, title: "Test", actions: { EmptyView() })
     #expect(navigationManager.selectedTab.isEmpty == false)
     #expect(navigationManager.stackPaths.isEmpty == false)
     #expect(navigationManager.presentedItems.isEmpty == false)
+    #expect(navigationManager.alertItems.isEmpty == false)
     navigationManager.reset()
     #expect(navigationManager.selectedTab.isEmpty == true)
     #expect(navigationManager.stackPaths.isEmpty == true)
     #expect(navigationManager.presentedItems.isEmpty == true)
+    #expect(navigationManager.alertItems.isEmpty == true)
   }
 
   @Test("When reset stacks for a root Then the stackPaths for that root should be empty")
