@@ -3,30 +3,30 @@ import SwiftUI
 
 /// Represents a navigable view item with a unique identifier and navigation mode.
 /// It is Identifiable due to sheet item. It is Hashable due to NavigationStack's navigationDestination
-struct NavigationItem<V: View>: Identifiable, Hashable {
+struct NavigationItem: Identifiable, Hashable {
   let id: String
-  private let makeView: () -> V
+  private let makeView: () -> AnyView
   let mode: NavigationMode
-  
-  var view: V {
+
+  var view: AnyView {
     makeView()
   }
-  
+
   /// Initializes a navigation item with a view builder and navigation mode.
-  init(
+  init<V: View>(
     id: String,
-    makeView: @escaping () -> V,
+    @ViewBuilder makeView: @escaping () -> V,
     mode: NavigationMode
   ) {
     self.id = id + UUID().uuidString
-    self.makeView = makeView
+    self.makeView = { AnyView(makeView()) }
     self.mode = mode
   }
-  
+
   static func == (lhs: NavigationItem, rhs: NavigationItem) -> Bool {
     lhs.id == rhs.id
   }
-  
+
   func hash(into hasher: inout Hasher) {
     hasher.combine(id)
   }
