@@ -4,29 +4,32 @@ import SwiftUI
 struct NavigationAlert: Identifiable {
   let id: String
   let title: String
-  let actions: AnyView
-  let message: AnyView?
+  private let makeActions: () -> AnyView
+  private let makeMessage: (() -> AnyView)?
+
+  var actions: AnyView { makeActions() }
+  var message: AnyView? { makeMessage?() }
 
   /// Initializes a navigation alert with a title, actions, and a message.
   init<A: View, M: View>(
     title: String,
-    @ViewBuilder actions: () -> A,
-    @ViewBuilder message: () -> M
+    @ViewBuilder actions: @escaping () -> A,
+    @ViewBuilder message: @escaping () -> M
   ) {
     self.id = UUID().uuidString
     self.title = title
-    self.actions = AnyView(actions())
-    self.message = AnyView(message())
+    self.makeActions = { AnyView(actions()) }
+    self.makeMessage = { AnyView(message()) }
   }
 
   /// Initializes a navigation alert with a title and actions.
   init<A: View>(
     title: String,
-    @ViewBuilder actions: () -> A
+    @ViewBuilder actions: @escaping () -> A
   ) {
     self.id = UUID().uuidString
     self.title = title
-    self.actions = AnyView(actions())
-    self.message = nil
+    self.makeActions = { AnyView(actions()) }
+    self.makeMessage = nil
   }
 }

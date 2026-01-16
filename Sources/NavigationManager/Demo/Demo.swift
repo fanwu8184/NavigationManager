@@ -8,7 +8,7 @@ extension AppScreen: NavigableScreen {
   var id: String {
     rawValue.uppercased()
   }
-
+  
   func contentView() -> some View {
     switch self {
     case .root: HomeView()
@@ -24,7 +24,7 @@ extension AppScreen: NavigableScreen {
     case .scalableSheet: Color.red.frame(height: 200)
     }
   }
-
+  
   @ViewBuilder
   func tabItem() -> some View {
     switch self {
@@ -40,7 +40,7 @@ extension AppScreen: NavigableScreen {
 
 struct AView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Button("Present alert with actions") {
@@ -51,12 +51,12 @@ struct AView: View {
           } label: {
             Text("Delete")
           }
-
+          
           /// A cancellation button that appears with bold text.
           Button("Cancel", role: .cancel) {
             // Perform cancellation
           }
-
+          
           /// A general button.
           Button("OK") {
             // Dismiss without action
@@ -88,7 +88,7 @@ struct AView: View {
 
 struct BView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Button("Push a customized Tab BA in B") {
@@ -102,7 +102,7 @@ struct BView: View {
 
 struct CView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Button("Present D with Sheet in c") {
@@ -119,7 +119,7 @@ struct CView: View {
 
 struct DView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Text("D View")
@@ -132,7 +132,7 @@ struct DView: View {
 
 struct EView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Button("Push F in A") {
@@ -148,7 +148,7 @@ struct EView: View {
 
 struct FView: View {
   @Environment(NavigationManager.self) private var manager
-
+  
   var body: some View {
     VStack {
       Button("pop from A") {
@@ -165,7 +165,7 @@ struct FView: View {
 struct BAView: View {
   @Environment(NavigationManager.self) private var manager
   let tabs: [AppScreen] = [.bb, .bc]
-
+  
   var body: some View {
     VStack {
       HStack(spacing: 10) {
@@ -182,7 +182,7 @@ struct BAView: View {
         }
       }
       .padding()
-
+      
       if let id = manager.getSelectedTabID(for: AppScreen.ba) {
         AppScreen(rawValue: id.lowercased())?.contentView()
       }
@@ -216,7 +216,7 @@ struct BCView: View {
 struct HomeView: View {
   private var manager = NavigationManager()
   let tabs: [AppScreen] = [.a, .b]
-
+  
   var body: some View {
     // have to wrap forEach in Group to make withTabNavigation work in simulators
     Group {

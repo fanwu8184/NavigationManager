@@ -5,7 +5,7 @@ struct NavigationPresentationModifier: ViewModifier {
   private var manager: NavigationManager
   private let root: any NavigableScreen
   private let includingNavigationDestination: Bool
-
+  
   init(
     manager: NavigationManager,
     root: any NavigableScreen,
@@ -15,7 +15,7 @@ struct NavigationPresentationModifier: ViewModifier {
     self.root = root
     self.includingNavigationDestination = includingNavigationDestination
   }
-
+  
   /// Binding for sheet presentations.
   private var presentedBinding: Binding<NavigationItem<AnyView>?> {
     Binding(
@@ -23,7 +23,7 @@ struct NavigationPresentationModifier: ViewModifier {
       set: { manager.presentedItems[root.id] = $0 }
     )
   }
-
+  
   /// Binding for full-screen cover presentations.
   private var fullScreenBinding: Binding<NavigationItem<AnyView>?> {
     Binding(
@@ -31,7 +31,7 @@ struct NavigationPresentationModifier: ViewModifier {
       set: { manager.presentedItems[root.id] = $0 }
     )
   }
-
+  
   /// Binding for alert presentations.
   private var alertBinding: Binding<Bool> {
     Binding(
@@ -39,9 +39,9 @@ struct NavigationPresentationModifier: ViewModifier {
       set: { if !$0 { manager.alertItems[root.id] = nil } }
     )
   }
-
+  
   @State private var sheetHeight: CGFloat = .zero
-
+  
   func body(content: Content) -> some View {
     let base = content
       .sheet(item: presentedBinding) { item in
@@ -73,7 +73,7 @@ struct NavigationPresentationModifier: ViewModifier {
           }
         }
       )
-
+    
     if includingNavigationDestination {
       base.navigationDestination(for: NavigationItem<AnyView>.self) { item in
         item.view
