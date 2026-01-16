@@ -82,7 +82,10 @@ public class NavigationManager: NavigationManagerProtocol {
 
   /// Pops the top view from the navigation stack for the root screen.
   public func pop<Root: NavigableScreen>(from root: Root) {
-    stackPaths[root.id]?.removeLast()
+    if var stack = stackPaths[root.id], !stack.isEmpty {
+      stack.removeLast()
+      stackPaths[root.id] = stack
+    }
   }
 
   /// Clears the navigation stack for the root screen, returning to the root view.
