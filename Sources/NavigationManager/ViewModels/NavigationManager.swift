@@ -27,7 +27,7 @@ public class NavigationManager: NavigationManagerProtocol {
     let root = screens[0]
     resetStacks(in: root)
     for screen in screens.dropFirst() {
-      let item = NavigationItem(id: screen.id, makeView: { AnyView(screen.contentView()) }, mode: .stack)
+      let item = NavigationItem(id: screen.id, makeView: { screen.contentView() }, mode: .stack)
       stackPaths[root.id, default: []].append(item)
     }
   }

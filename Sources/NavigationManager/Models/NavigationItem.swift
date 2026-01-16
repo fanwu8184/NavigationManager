@@ -13,9 +13,9 @@ struct NavigationItem: Identifiable, Hashable {
   }
 
   /// Initializes a navigation item with a view builder and navigation mode.
-  init<V: View>(
+  init(
     id: String,
-    @ViewBuilder makeView: @escaping () -> V,
+    makeView: @escaping () -> any View,
     mode: NavigationMode
   ) {
     self.id = id + UUID().uuidString
