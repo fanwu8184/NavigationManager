@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum AppScreen: String, CaseIterable {
-  case root, a, b, c, d, e, f, ba, bb, bc
+  case root, a, b, c, d, e, f, ba, bb, bc, scalableSheet
 }
 
 extension AppScreen: NavigableScreen {
@@ -21,6 +21,7 @@ extension AppScreen: NavigableScreen {
     case .ba: BAView()
     case .bb: BBView()
     case .bc: BCView()
+    case .scalableSheet: Color.red.frame(height: 200)
     }
   }
 
@@ -63,6 +64,9 @@ struct AView: View {
         }, message: {
           Text("Alert message")
         })
+      }
+      Button("Present a scalable sheet") {
+        manager.presentSheet(from: AppScreen.a, to: AppScreen.scalableSheet, isScalable: true)
       }
       Button("Go to Tab B from Root") {
         manager.selectTab(from: AppScreen.root, to: AppScreen.b)

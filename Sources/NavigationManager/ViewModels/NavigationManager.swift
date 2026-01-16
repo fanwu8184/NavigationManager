@@ -36,9 +36,10 @@ public class NavigationManager: NavigationManagerProtocol {
   public func presentSheet<Root: NavigableScreen, Child: NavigableScreen>(
     from root: Root,
     to child: Child,
-    detents: Set<PresentationDetent> = [.large]
+    detents: Set<PresentationDetent> = [.large],
+    isScalable: Bool = false
   ) {
-    let item = NavigationItem(id: child.id, view: AnyView(child.contentView()), mode: .sheet(detents: detents))
+    let item = NavigationItem(id: child.id, view: AnyView(child.contentView()), mode: .sheet(detents: detents, isScalable: isScalable))
     presentedItems[root.id] = item
   }
 

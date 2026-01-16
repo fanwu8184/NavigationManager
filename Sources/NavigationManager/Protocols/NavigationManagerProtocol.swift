@@ -7,7 +7,8 @@ public protocol NavigationManagerProtocol {
     func presentSheet<Root: NavigableScreen, Child: NavigableScreen>(
         from root: Root,
         to child: Child,
-        detents: Set<PresentationDetent>
+        detents: Set<PresentationDetent>,
+        isScalable: Bool
     )
     func presentFullScreen<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child)
     func presentAlert<Root: NavigableScreen, A: View, M: View>(
@@ -35,8 +36,9 @@ public extension NavigationManagerProtocol {
     func presentSheet<Root: NavigableScreen, Child: NavigableScreen>(
         from root: Root,
         to child: Child,
-        detents: Set<PresentationDetent> = [.large]
+        detents: Set<PresentationDetent> = [.large],
+        isScalable: Bool = false
     ) {
-        presentSheet(from: root, to: child, detents: detents)
+        presentSheet(from: root, to: child, detents: detents, isScalable: isScalable)
     }
 }

@@ -40,11 +40,21 @@ struct NavigationPresentationModifier: ViewModifier {
     )
   }
 
+  @State private var sheetHeight: CGFloat = .zero
+
   func body(content: Content) -> some View {
     let base = content
       .sheet(item: presentedBinding) { item in
-        item.view
-          .presentationDetents(item.mode.detents ?? [.large])
+        if item.mode.isScalable {
+          item.view
+            .readHeight { height in
+              sheetHeight = height
+            }
+            .presentationDetents(sheetHeight > 0 ? [.height(sheetHeight)] : [.large])
+        } else {
+          item.view
+            .presentationDetents(item.mode.detents ?? [.large])
+        }
       }
       .fullScreenCover(item: fullScreenBinding) { item in
         item.view
