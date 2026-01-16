@@ -10,7 +10,19 @@ public protocol NavigationManagerProtocol {
         detents: Set<PresentationDetent>
     )
     func presentFullScreen<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child)
+    func presentAlert<Root: NavigableScreen, A: View, M: View>(
+        from root: Root,
+        title: String,
+        @ViewBuilder actions: () -> A,
+        @ViewBuilder message: () -> M
+    )
+    func presentAlert<Root: NavigableScreen, A: View>(
+        from root: Root,
+        title: String,
+        @ViewBuilder actions: () -> A
+    )
     func dismiss<Root: NavigableScreen>(from root: Root)
+    func dismissAlert<Root: NavigableScreen>(from root: Root)
     func pop<Root: NavigableScreen>(from root: Root)
     func popToRoot<Root: NavigableScreen>(from root: Root)
     func selectTab<Root: NavigableScreen, Child: NavigableScreen>(from root: Root, to child: Child)
